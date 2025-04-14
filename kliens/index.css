@@ -1,0 +1,12 @@
+form {
+    border: 1px solid black;
+    border-radius: 10px;
+}
+.form-select, .form-control {
+    width: 30%;
+    margin: auto;
+}
+#feladat-sorszama {
+    width: 10%;
+    text-align: center !important;
+}
