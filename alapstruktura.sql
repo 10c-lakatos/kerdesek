@@ -1,4 +1,6 @@
 -- Adatbázis neve: kerdesek
+CREATE DATABASE IF NOT EXISTS kerdesek;
+
 -- Temakor
 CREATE TABLE temakor (
     id INT AUTO_INCREMENT PRIMARY KEY,
