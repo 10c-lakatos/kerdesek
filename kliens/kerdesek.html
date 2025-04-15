@@ -37,6 +37,7 @@
                     <th>Kérdés címe</th>
                     <th>Kérdés leírása</th>
                     <th>Kérdés elvárásai</th>
+                    <th>Módosítás</th>
                 </tr>
             </thead>
             <tbody id="adatok">
@@ -44,6 +45,44 @@
             </tbody>
         </table>
     </div>
+    <div class="modal fade" id="modifyModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modalcim">Új módosítás</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="temakorneve" class="col-form-label">Témakör neve:</label>
+                <input type="text" class="form-control" id="temakorneve">
+              </div>
+              <div class="mb-3">
+                <label for="sorszam" class="col-form-label">Sorszám:</label>
+                <input type="text" class="form-control" id="sorszam">
+              </div>
+              
+              <div class="mb-3">
+                <label for="kerdescime" class="col-form-label">Kérdés címe:</label>
+                <input type="text" class="form-control" id="kerdescime">
+              </div>
+              <div class="mb-3">
+                <label for="kerdesleirasa" class="col-form-label">Kérdés leírása:</label>
+                <input type="text" class="form-control" id="kerdesleirasa">
+              </div>
+              <div class="mb-3">
+                <label for="kerdeselvarasai" class="col-form-label">Kérdés elvárásai:</label>
+                <input type="text" class="form-control" id="kerdeselvarasai">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="modositas">Módosítás</button>
+          </div>
+        </div>
+      </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script src="./kerdesek.js"></script>
 </body>

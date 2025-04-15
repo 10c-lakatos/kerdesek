@@ -44,13 +44,6 @@ document.getElementById('submit').addEventListener('click', async function() {
         return;
     }
     elvarasok = ertekek.join('; ');
-    console.log(JSON.stringify({
-        temakornev,
-        felsorszam,
-        felcim,
-        felleiras,
-        elvarasok
-    }))
     const response = await fetch('http://localhost:3000/api/feladat', {
         method: 'POST',
         headers: {
@@ -63,5 +56,5 @@ document.getElementById('submit').addEventListener('click', async function() {
     const responseData = await response.json();
 
     alert(responseData.message);
-    
+    location.reload();
 })

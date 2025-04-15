@@ -39,6 +39,36 @@ app.get('/api/kerdeseklista', async (req, res) => {
 
 })
 
+app.post('/api/modositas', async (req, res) => {
+  try {
+    const sqlid = req.body["id"]
+    const temakor_nev = req.body["temakornev"]
+    const sorszam = Number(req.body["felsorszam"])
+    const cim = req.body["felcim"]
+    const leiras = req.body["felleiras"]
+    const elvaras = req.body["felelvaras"]
+    if (!temakor_nev || !sorszam || !cim || !leiras || !elvaras) {
+      return res.status(400).json({ message: 'Minden mezőt ki kell tölteni!' });
+    }
+    const [temakorRows] = await db.query(
+      'SELECT id FROM temakor WHERE nev = ?',
+      [temakor_nev]
+    );
+    if (temakorRows.length === 0) {
+      return res.status(400).json({ message: `Nem létezik ilyen témakör: ${temakor_nev}` });
+    }
+    const temakor_id = temakorRows[0].id;
+    await db.query(
+      'UPDATE feladat SET temakor_id = ?, sorszam = ?, cim = ?, leiras = ?, elvaras = ? WHERE id = ?;',
+      [temakor_id, sorszam, cim, leiras, elvaras, sqlid]
+    )
+    res.json({ message: 'Sikeresen módosítva!' })
+  } catch (err) {
+    console.log(err)
+  }
+})
+
+
 app.post('/api/feladat', async (req, res) => {
   try {
     const temakor_nev = req.body["temakornev"]
