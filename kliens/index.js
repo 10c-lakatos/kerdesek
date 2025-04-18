@@ -44,10 +44,12 @@ document.getElementById('submit').addEventListener('click', async function() {
         return;
     }
     elvarasok = ertekek.join('; ');
+    const token = localStorage.getItem('token');
     const response = await fetch('http://localhost:3000/api/feladat', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           temakornev, felsorszam, felcim, felleiras, elvarasok

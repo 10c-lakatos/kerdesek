@@ -22,6 +22,9 @@
             <li class="nav-item">
               <a class="nav-link" href="./kerdesek.html">Kérdések</a>
             </li>
+            <li class="nav-item">
+              <button id="logout-btn" class="btn btn-outline-danger">Kijelentkezés</button>
+            </li>
           </ul>
         </div>
       </div>
@@ -53,5 +56,17 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script src="./index.js"></script>
+    <script>
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert("Kérlek jelentkezz be először!");
+        window.location.href = './bejelentkezes/login.html';
+      }
+      document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('token');
+        alert('Sikeresen kijelentkeztél.');
+        window.location.href = './bejelentkezes/login.html';
+      });
+    </script>
   </body>
 </html>

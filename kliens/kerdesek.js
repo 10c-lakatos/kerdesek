@@ -43,13 +43,37 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${kerdes.cim}</td>
                     <td>${kerdes.leiras}</td>
                     <td>${kerdes.elvaras}</td>
-                    <td><button class="btn btn-outline-success" onclick="changeertek(String(${kerdes.id}))">Módosítás</button></td>`
+                    <td><button class="btn btn-outline-success" onclick="changeertekmodal(String(${kerdes.id}))">Módosítás</button></td>
+                    <td><button class="btn btn-outline-danger" onclick="torlesertekmodal(String(${kerdes.id}))">Törlés</button></td>`
             document.getElementById('adatok').appendChild(trow)
         });
     }).catch(err => console.log(err));
 })
 
-async function changeertek(id) {
+async function torlesertekmodal(id) {
+    const myModal = new bootstrap.Modal(document.getElementById('sureModal'))
+    document.getElementById('modositas2').outerHTML = `<button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="modositas2" onclick="torlesertek(${id})">Törlés</button>` 
+    myModal.show()
+}
+
+async function torlesertek(id) {
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://localhost:3000/api/torles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          id
+        })
+      });
+    const responseData = await response.json();
+    alert(responseData.message);
+    location.reload();
+}
+
+async function changeertekmodal(id) {
     const myModal = new bootstrap.Modal(document.getElementById('modifyModal'))
     document.getElementById('modalcim').innerHTML = id+" ID-jű feladat módosítása"
     document.getElementById('temakorneve').value = kerdesek[id-1]["Témakör"]
@@ -68,10 +92,12 @@ async function ertekmodositas(id) {
     const felcim = document.getElementById('kerdescime').value
     const felleiras = document.getElementById('kerdesleirasa').value
     const felelvaras = document.getElementById('kerdeselvarasai').value
+    const token = localStorage.getItem('token');
     const response = await fetch('http://localhost:3000/api/modositas', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           id, temakornev, felsorszam, felcim, felleiras, felelvaras

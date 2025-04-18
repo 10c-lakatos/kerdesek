@@ -1,6 +1,9 @@
+require('dotenv').config()
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 const app = express();
 app.use(cors());
@@ -17,7 +20,7 @@ const db = mysql.createPool({
   queueLimit: 0 
 });
 
-app.get('/api/kerdeseklista', async (req, res) => {
+app.get('/api/kerdeseklista', authenticateToken, async (req, res) => {
   try {
     const [kerdesek] = await (db.query(
       'SELECT * FROM feladat'
@@ -39,7 +42,7 @@ app.get('/api/kerdeseklista', async (req, res) => {
 
 })
 
-app.post('/api/modositas', async (req, res) => {
+app.post('/api/modositas', authenticateToken, async (req, res) => {
   try {
     const sqlid = req.body["id"]
     const temakor_nev = req.body["temakornev"]
@@ -68,8 +71,24 @@ app.post('/api/modositas', async (req, res) => {
   }
 })
 
+app.post('/api/torles', authenticateToken, async (req, res) => {
+  try {
+    const sqlid = req.body["id"]
+    if (!sqlid) {
+      res.status(400).json({message: "Nincsen SQL-id!"})
+      return;
+    }
+    await db.query(
+      'DELETE FROM feladat WHERE id = ?;', [sqlid]
+    )
+    res.status(200).json({message: "Sikeres törlés!"})
+  } catch (err) {
+    res.status(400).json({message: "Szerverhiba történt, próbáld újra később!"})
+  }
+})
 
-app.post('/api/feladat', async (req, res) => {
+
+app.post('/api/feladat', authenticateToken, async (req, res) => {
   try {
     const temakor_nev = req.body["temakornev"]
     const sorszam = Number(req.body["felsorszam"])
@@ -98,6 +117,53 @@ app.post('/api/feladat', async (req, res) => {
     res.status(500).json({ message: 'Szerverhiba történt, próbáld újra később!' })
   }
 });
+
+// Bej+Reg
+
+app.post('/register', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const hashed = await bcrypt.hash(password, 10);
+    await db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashed]);
+    res.json({ message: 'Sikeres regisztráció' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'A felhasználónév már létezik, vagy hiba a regisztrációnál!' });
+  }
+});
+
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const [rows] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+    if (rows.length === 0) return res.status(400).json({ error: 'Hibás felhasználónév' });
+
+    const user = rows[0];
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(400).json({ error: 'Hibás jelszó' });
+
+    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    res.json({ token });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Bejelentkezési hiba' });
+  }
+});
+
+function authenticateToken(req, res, next) {
+  const token = req.headers['authorization']?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Hiányzó token' });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Érvénytelen token' });
+    req.user = user;
+    next();
+  });
+};
 
 app.listen(3000, () => {
   console.log('A backend szerver fut a http://localhost:3000 címen');

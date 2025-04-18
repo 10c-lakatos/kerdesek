@@ -21,6 +21,9 @@
               <li class="nav-item">
                 <a class="nav-link active" href="./kerdesek.html">Kérdések</a>
               </li>
+              <li class="nav-item">
+                <button id="logout-btn" class="btn btn-outline-danger">Kijelentkezés</button>
+              </li>
             </ul>
           </div>
         </div>
@@ -38,6 +41,7 @@
                     <th>Kérdés leírása</th>
                     <th>Kérdés elvárásai</th>
                     <th>Módosítás</th>
+                    <th>Törlés</th>
                 </tr>
             </thead>
             <tbody id="adatok">
@@ -83,7 +87,37 @@
           </div>
         </div>
       </div>
+      </div>
+      <div class="modal fade" id="sureModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5">Biztosan törölni szeretnéd?</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Ha most törlöd, később nem hozhatod vissza!
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégsem</button>
+              <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="modositas2">Törlés</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script src="./kerdesek.js"></script>
+    <script>
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert("Kérlek jelentkezz be először!");
+        window.location.href = './bejelentkezes/login.html';
+      }
+      document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('token');
+        alert('Sikeresen kijelentkeztél.');
+        window.location.href = './bejelentkezes/login.html';
+      });
+    </script>
 </body>
 </html>
