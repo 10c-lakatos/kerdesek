@@ -1,15 +1,21 @@
 let kerdesek = []
 document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      Swal.fire({title: "", text: 'Előszőr kérlek jelentkezz be a kérdések listázásához!', icon: "error"}).then(() => {
+        window.location.href = "./index.html"
+      })
+    }
     fetch('http://localhost:3000/api/kerdeseklista')
     .then(a => a.json())
     .then(data => {
         try {
             if (data.err == "Nincsenek a kérdésekről adatok!") {
-                alert("Nincsenek a kérdésekről adatok!")
+                Swal.fire({title: "", text: 'Nincsenek a kérdésekről adatok!', icon: "error"});
                 return;
             }
             if (data.err == "Szerverhiba történt, próbáld újra később!") {
-                alert("Szerverhiba történt, próbáld újra később!")
+                Swal.fire({title: "", text: 'Szerverhiba történt, próbáld újra később!', icon: "error"});
             }
         } catch (err) {
 
@@ -69,7 +75,11 @@ async function torlesertek(id) {
         })
       });
     const responseData = await response.json();
-    alert(responseData.message);
+    if (response.ok) {
+        Swal.fire({title: "", text: responseData.message, icon: "success"});
+      } else {
+        Swal.fire({title: "", text: responseData.error, icon: "error"});
+      }
     location.reload();
 }
 
@@ -104,6 +114,10 @@ async function ertekmodositas(id) {
         })
       });
     const responseData = await response.json();
-    alert(responseData.message);
+    if (response.ok) {
+        Swal.fire({title: "", text: responseData.message, icon: "success"});
+      } else {
+        Swal.fire({title: "", text: responseData.error, icon: "error"});
+      }
     location.reload();
 }

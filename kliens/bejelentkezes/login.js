@@ -12,9 +12,19 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     const data = await res.json();
     if (res.ok) {
       localStorage.setItem('token', data.token);
-      alert('Sikeres bejelentkezés!');
-      window.location.href = '../index.html';
+      Swal.fire({
+        title: "",
+        text: "Sikeres bejelentkezés!",
+        icon: "success"
+      }).then((data) => {
+        window.location.href = "../index.html"
+      })
+      
     } else {
-      alert(data.error || 'Hibás felhasználónév vagy jelszó.');
+      Swal.fire({
+        title: "",
+        text: data.error || 'Hiba',
+        icon: "error"
+      });
     }
   });

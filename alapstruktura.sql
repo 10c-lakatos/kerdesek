@@ -1,6 +1,6 @@
 -- Adatbázis neve: kerdesek
 CREATE DATABASE IF NOT EXISTS kerdesek;
-
+USE kerdesek;
 -- Temakor
 CREATE TABLE temakor (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -10,9 +10,27 @@ CREATE TABLE temakor (
 -- Login rendszer
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  username VARCHAR(255) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL
+  username VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  first_name VARCHAR(100),
+  last_name VARCHAR(100),
+  email VARCHAR(255),
+  avatar VARCHAR(255),
+  disabled TINYINT(1) DEFAULT 0,
+  deleted TINYINT(1) DEFAULT 0,
+  role_id INT,
+  FOREIGN KEY (role_id) REFERENCES role(id)
 );
+-- Role
+CREATE TABLE role (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT INTO role (name) VALUES
+('admin'),
+('teacher'),
+('student');
 
 -- Feladat
 CREATE TABLE feladat (

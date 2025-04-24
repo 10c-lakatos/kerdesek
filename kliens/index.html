@@ -22,8 +22,11 @@
             <li class="nav-item">
               <a class="nav-link" href="./kerdesek.html">Kérdések</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" id="logout-btn-div">
               <button id="logout-btn" class="btn btn-outline-danger">Kijelentkezés</button>
+            </li>
+            <li class="nav-item mx-2" id="login-btn-div">
+              <a id="login-btn" class="btn btn-outline-primary" href="./bejelentkezes/login.html">Bejelentkezés</a>
             </li>
           </ul>
         </div>
@@ -59,14 +62,19 @@
     <script>
       const token = localStorage.getItem('token');
       if (!token) {
-        alert("Kérlek jelentkezz be először!");
-        window.location.href = './bejelentkezes/login.html';
+        document.getElementById('logout-btn-div').style.display = 'none';
+        document.getElementById('login-btn-div').style.display = 'block';
+      } else {
+        document.getElementById('logout-btn-div').style.display = 'block';
+        document.getElementById('login-btn-div').style.display = 'none';
       }
       document.getElementById('logout-btn').addEventListener('click', () => {
         localStorage.removeItem('token');
-        alert('Sikeresen kijelentkeztél.');
-        window.location.href = './bejelentkezes/login.html';
+        Swal.fire({title: "", text: 'Sikeresen kijelentkeztél!', icon: "success"}).then(() => {
+          window.location.href = './bejelentkezes/login.html';
+        })
       });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </body>
 </html>
