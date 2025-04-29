@@ -1,0 +1,158 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kérdések</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Kérdések</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="./index.html">Új kérdés</a>
+              </li>
+              <li class="nav-item" id="kerdesek-btn-div">
+                <a class="nav-link" href="./kerdesek.html">Kérdések</a>
+              </li>
+              <li class="nav-item" id="users-btn-div">
+                <a href="./users.html" class="nav-link active">Felhasználók menedzselése</a>
+              </li>
+              <li class="nav-item" id="logout-btn-div">
+                <button id="logout-btn" class="btn btn-outline-danger">Kijelentkezés</button>
+              </li>
+              <li class="nav-item mx-2" id="login-btn-div">
+                <a id="login-btn" class="btn btn-outline-primary" href="./bejelentkezes/login.html">Bejelentkezés</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <div class="container text-center">
+        <h1 class="my-5">Felhasználók listázva</h1>
+        <table class="table my-5">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Felhasználónév</th>
+                    <th>Keresztnév</th>
+                    <th>Vezetéknév</th>
+                    <th>Email-cím</th>
+                    <th>Rang</th>
+                    <th>Korlátozás (0/1)</th>
+                    <th>Módosítás</th>
+                    <th>Törlés</th>
+                </tr>
+            </thead>
+            <tbody id="adatok">
+                
+            </tbody>
+        </table>
+    </div>
+    <div class="modal fade" id="modifyModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modalcim">Új módosítás</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="felhasznalonev" class="col-form-label">Felhasználónév:</label>
+                <input type="text" class="form-control" id="felhasznalonev">
+              </div>
+              <div class="mb-3">
+                <label for="keresztnev" class="col-form-label">Keresztnév:</label>
+                <input type="text" class="form-control" id="keresztnev">
+              </div>
+              
+              <div class="mb-3">
+                <label for="vezeteknev" class="col-form-label">Vezetéknév:</label>
+                <input type="text" class="form-control" id="vezeteknev">
+              </div>
+              <div class="mb-3">
+                <label for="email" class="col-form-label">Email-cím:</label>
+                <input type="text" class="form-control" id="email">
+              </div>
+              <div class="mb-3">
+                <label for="rang" class="col-form-label">Rang:</label>
+                <select class="form-select" id="rang">
+                    <option selected value="student">Diák</option>
+                    <option value="teacher">Tanár</option>
+                    <option value="admin">Admin</option>
+                  </select>
+              </div>
+              <div class="mb-3">
+                <label for="disabled" class="col-form-label">Korlátozott (0/1):</label>
+                <input type="text" class="form-control" id="disabled">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="modositas">Módosítás</button>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="modal fade" id="sureModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5">Biztosan törölni szeretnéd?</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Ha most törlöd, később nem hozhatod vissza!
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégsem</button>
+              <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="modositas2">Törlés</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+    <script src="./users.js"></script>
+    <script>
+      const token = localStorage.getItem('token');
+      const roleid = localStorage.getItem('roleid');
+      if (!token) {
+        document.getElementById('logout-btn-div').style.display = 'none';
+        document.getElementById('login-btn-div').style.display = 'block';
+      } else {
+        document.getElementById('logout-btn-div').style.display = 'block';
+        document.getElementById('login-btn-div').style.display = 'none';
+      }
+      if (roleid == 3) {
+        document.getElementById('kerdesek-btn-div').style.display = 'none';
+        document.getElementById('users-btn-div').style.display = 'none';
+      } else if (roleid == 2) {
+        document.getElementById('kerdesek-btn-div').style.display = 'block';
+        document.getElementById('users-btn-div').style.display = 'none';
+      } else if (roleid == 1) {
+        document.getElementById('kerdesek-btn-div').style.display = 'block';
+        document.getElementById('users-btn-div').style.display = 'block';
+      } else {
+        document.getElementById('kerdesek-btn-div').style.display = 'none';
+        document.getElementById('users-btn-div').style.display = 'none';
+      }
+      document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('roleid');
+        Swal.fire({title: "", text: 'Sikeresen kijelentkeztél!', icon: "success"}).then(() => {
+          window.location.href = './bejelentkezes/login.html';
+        })
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </body>
+
+
+</html>
