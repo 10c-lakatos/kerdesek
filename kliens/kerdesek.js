@@ -1,8 +1,14 @@
 let kerdesek = []
 document.addEventListener('DOMContentLoaded', function() {
     const token = localStorage.getItem('token');
+    const roleid = localStorage.getItem('roleid');
     if (!token) {
       Swal.fire({title: "", text: 'Előszőr kérlek jelentkezz be a kérdések listázásához!', icon: "error"}).then(() => {
+        window.location.href = "./index.html"
+      })
+    }
+    if (roleid != 2 && roleid != 1) {
+      Swal.fire({title: "", text: 'Nincs jogod ehhez!', icon: "error"}).then(() => {
         window.location.href = "./index.html"
       })
     }
@@ -76,11 +82,12 @@ async function torlesertek(id) {
       });
     const responseData = await response.json();
     if (response.ok) {
-        Swal.fire({title: "", text: responseData.message, icon: "success"});
+        Swal.fire({title: "", text: responseData.message, icon: "success"}).then(() => {
+          location.reload();
+        });
       } else {
         Swal.fire({title: "", text: responseData.error, icon: "error"});
       }
-    location.reload();
 }
 
 async function changeertekmodal(id) {
@@ -115,9 +122,10 @@ async function ertekmodositas(id) {
       });
     const responseData = await response.json();
     if (response.ok) {
-        Swal.fire({title: "", text: responseData.message, icon: "success"});
+      Swal.fire({title: "", text: responseData.message, icon: "success"}).then(() => {
+        location.reload();
+      });
       } else {
         Swal.fire({title: "", text: responseData.error, icon: "error"});
       }
-    location.reload();
 }

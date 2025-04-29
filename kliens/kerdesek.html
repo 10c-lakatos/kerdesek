@@ -21,6 +21,9 @@
               <li class="nav-item">
                 <a class="nav-link active" href="./kerdesek.html">Kérdések</a>
               </li>
+              <li class="nav-item" id="users-btn-div">
+                <a href="./users.html" class="nav-link">Felhasználók menedzselése</a>
+              </li>
               <li class="nav-item">
                 <button id="logout-btn" class="btn btn-outline-danger">Kijelentkezés</button>
               </li>
@@ -109,11 +112,26 @@
     <script src="./kerdesek.js"></script>
     <script>
       const token = localStorage.getItem('token');
+      const roleid = localStorage.getItem('roleid');
       if (!token) {
         document.getElementById('logout-btn-div').style.display = 'none';
       } 
+      if (roleid == 3) {
+        document.getElementById('kerdesek-btn-div').style.display = 'none';
+        document.getElementById('users-btn-div').style.display = 'none';
+      } else if (roleid == 2) {
+        document.getElementById('kerdesek-btn-div').style.display = 'block';
+        document.getElementById('users-btn-div').style.display = 'none';
+      } else if (roleid == 1) {
+        document.getElementById('kerdesek-btn-div').style.display = 'block';
+        document.getElementById('users-btn-div').style.display = 'block';
+      } else {
+        document.getElementById('kerdesek-btn-div').style.display = 'none';
+        document.getElementById('users-btn-div').style.display = 'none';
+      }
       document.getElementById('logout-btn').addEventListener('click', () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('roleid');
         Swal.fire({title: "", text: 'Sikeresen kijelentkeztél!', icon: "success"}).then(() => {
           window.location.href = './bejelentkezes/login.html';
         })

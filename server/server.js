@@ -44,6 +44,28 @@ app.get('/api/kerdeseklista', async (req, res) => {
 
 })
 
+app.get('/api/userslist', async (req, res) => {
+  try {
+    const [kerdesek] = await (db.query(
+      'SELECT * FROM users'
+    ))
+    if (kerdesek.length === 0) {
+      return res.status(400).json({ error: 'Nincsenek a kérdésekről adatok!' });
+    }
+    for (let i = 0; i < kerdesek.length; i++) {
+      const user_role_id = kerdesek[i].role_id;
+      const [role_sor] = await db.query('SELECT name FROM role WHERE id = ?', [user_role_id]);
+      kerdesek[i].role = role_sor[0]?.name || 'Ismeretlen';
+    }
+
+    res.json(kerdesek);
+  } catch (error) {
+    console.error('Hiba:', error);
+    res.status(500).json({ error: 'Szerverhiba történt, próbáld újra később!' });
+  }
+
+})
+
 app.post('/api/modositas', authenticateToken, async (req, res) => {
   try {
     const sqlid = req.body["id"]
@@ -72,6 +94,29 @@ app.post('/api/modositas', authenticateToken, async (req, res) => {
     console.log(err)
   }
 })
+app.post('/api/userchange', authenticateToken, async (req, res) => {
+  try {
+    const {username, first_name, last_name, email, disabled, role, id} = req.body;
+    if (!username || !first_name || !last_name || !email || !disabled || !role) {
+      return res.status(400).json({ error: 'Minden mezőt ki kell tölteni!' });
+    }
+    const [roleRows] = await db.query(
+      'SELECT id FROM role WHERE name = ?',
+      [role]
+    );
+    if (roleRows.length === 0) {
+      return res.status(400).json({ error: `Nem létezik ilyen rang: ${role}` });
+    }
+    const role_id = roleRows[0].id;
+    await db.query(
+      'UPDATE users SET username = ?, first_name = ?, last_name = ?, email = ?, disabled = ?, role_id = ? WHERE id = ?;',
+      [username, first_name, last_name, email, disabled, role_id, id]
+    )
+    res.json({ message: 'Sikeresen módosítva!' })
+  } catch (err) {
+    console.log(err)
+  }
+})
 
 app.post('/api/torles', authenticateToken, async (req, res) => {
   try {
@@ -89,6 +134,21 @@ app.post('/api/torles', authenticateToken, async (req, res) => {
   }
 })
 
+app.post('/api/userdelete', authenticateToken, async (req, res) => {
+  try {
+    const sqlid = req.body["id"]
+    if (!sqlid) {
+      res.status(400).json({error: "Nincsen SQL-id!"})
+      return;
+    }
+    await db.query(
+      'DELETE FROM users WHERE id = ?;', [sqlid]
+    )
+    res.status(200).json({message: "Sikeres törlés!"})
+  } catch (err) {
+    res.status(400).json({error: "Szerverhiba történt, próbáld újra később!"})
+  }
+})
 
 app.post('/api/feladat', authenticateToken, async (req, res) => {
   try {
@@ -148,12 +208,11 @@ app.post('/login', async (req, res) => {
     const user = rows[0];
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ error: 'Hibás jelszó' });
-    console.log(user.id)
-    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT, {
+    const token = jwt.sign({ id: user.id, username: user.username }, 'ed2d60efa09b793925b26bb76c1624cdb1cbfaca7cb47d98851a6f52130e6d342a3182798b23b90065abe7a8364b944e2b03e29bb48c41a1ac05c68fd9807c2e', {
       expiresIn: '1h',
     });
 
-    res.json({ token });
+    res.json({ token, roleid: user.role_id, username: user.username });
 
   } catch (err) {
     console.error(err);
@@ -168,7 +227,7 @@ async function authenticateToken(req, res, next) {
   if (!token) return res.sendStatus(401);
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT);
+    const decoded = jwt.verify(token, 'ed2d60efa09b793925b26bb76c1624cdb1cbfaca7cb47d98851a6f52130e6d342a3182798b23b90065abe7a8364b944e2b03e29bb48c41a1ac05c68fd9807c2e');
 
     const [users] = await db.query(
       'SELECT * FROM users WHERE id = ? AND deleted = 0 AND disabled = 0',

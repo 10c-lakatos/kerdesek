@@ -12,6 +12,8 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     const data = await res.json();
     if (res.ok) {
       localStorage.setItem('token', data.token);
+      localStorage.setItem('roleid', data.roleid);
+      localStorage.setItem('username', data.username);
       Swal.fire({
         title: "",
         text: "Sikeres bejelentkezés!",

@@ -7,6 +7,17 @@ CREATE TABLE temakor (
     nev VARCHAR(100) NOT NULL
 );
 
+-- Role
+CREATE TABLE role (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT INTO role (name) VALUES
+('admin'),
+('teacher'),
+('student');
+
 -- Login rendszer
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -21,16 +32,6 @@ CREATE TABLE users (
   role_id INT,
   FOREIGN KEY (role_id) REFERENCES role(id)
 );
--- Role
-CREATE TABLE role (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(50) NOT NULL UNIQUE
-);
-
-INSERT INTO role (name) VALUES
-('admin'),
-('teacher'),
-('student');
 
 -- Feladat
 CREATE TABLE feladat (
