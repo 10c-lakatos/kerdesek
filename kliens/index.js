@@ -53,16 +53,55 @@ document.getElementById('submit').addEventListener('click', async function() {
         return;
     }
     elvarasok = ertekek.join('; ');
+    let isthere = -1
+    let questions = {}
+    fetch('http://localhost:3000/api/kerdeseklista')
+    .then(a => a.json())
+    .then(data => {
+        try {
+            if (data.err == "Nincsenek a kérdésekről adatok!") {
+                return;
+            }
+            if (data.err == "Szerverhiba történt, próbáld újra később!") {
+                Swal.fire({title: "", text: 'Szerverhiba történt, próbáld újra később!', icon: "error"});
+            }
+        } catch (err) {
+
+        }
+        data.forEach(kerdes => {
+          let temakorneve = ""
+          if (kerdes.temakor_id == 1) {
+              temakorneve = "HTML"
+          } else if (kerdes.temakor_id == 2) {
+              temakorneve = "CSS"
+          } else if (kerdes.temakor_id == 3) {
+              temakorneve = "Bootstrap"
+          } else if (kerdes.temakor_id == 4) {
+              temakorneve = "Flexbox"
+          } else if (kerdes.temakor_id == 5) {
+              temakorneve = "Grid"
+          }
+          questions[kerdes.sorszam] = {"Témakör": temakorneve,
+              "ID": kerdes.id,
+              "Cím": kerdes.cim,
+              "Leírás": kerdes.leiras,
+              "Elvárás": kerdes.elvaras}
+            if (kerdes.sorszam == felsorszam) {
+              isthere = kerdes.sorszam
+            }
+        });
+      }).catch(err => console.log(err));
     const response = await fetch('http://localhost:3000/api/feladat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        },
+      },
         body: JSON.stringify({
           temakornev, felsorszam, felcim, felleiras, elvarasok
         })
-      });
+    
+    });
     const responseData = await response.json();
     if (response.ok) {
       Swal.fire({title: "", text: responseData.message, icon: "success"}).then(() => {
@@ -71,4 +110,25 @@ document.getElementById('submit').addEventListener('click', async function() {
     } else {
       Swal.fire({title: "", text: responseData.error, icon: "error"});
     }
+    if (isthere != -1) {
+      const response2 = await fetch('http://localhost:3000/api/modositas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          id, temakornev, felsorszam, felcim, felleiras, felelvaras
+        })
+      });
+      const responseData2 = await response2.json();
+      if (response2.ok) {
+      Swal.fire({title: "", text: responseData2.message, icon: "success"}).then(() => {
+        location.reload();
+      });
+      } else {
+        Swal.fire({title: "", text: responseData2.error, icon: "error"});
+      }
+      }
+
 })

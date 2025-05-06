@@ -25,7 +25,7 @@ const db = mysql.createPool({
 app.get('/api/kerdeseklista', async (req, res) => {
   try {
     const [kerdesek] = await (db.query(
-      'SELECT * FROM feladat'
+      'SELECT * FROM feladat ORDER BY sorszam ASC;'
     ))
     if (kerdesek.length === 0) {
       return res.status(400).json({ error: 'Nincsenek a kérdésekről adatok!' });

@@ -1,4 +1,4 @@
-let userek = []
+let users = {}
 document.addEventListener('DOMContentLoaded', function () {
     const token = localStorage.getItem('token');
     const roleid = localStorage.getItem('roleid');
@@ -27,16 +27,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
         data.forEach(user => {
-            let aktualis = {
-                "ID": user.id,
-                "Felhasználónév": user.username,
-                "Keresztnév": user.first_name,
-                "Vezetéknév": user.last_name,
-                "Email": user.email,
-                "Rang": user.role,
-                "Disabled": user.disabled
-            }
-            userek.push(aktualis)
+            users[user.id] = {"Felhasználónév": user.username,
+              "Keresztnév": user.first_name,
+              "Vezetéknév": user.last_name,
+              "Email": user.email,
+              "Rang": user.role,
+              "Disabled": user.disabled}
             const trow = document.createElement('tr')
             trow.innerHTML = `<td>${user.id}</td>
                     <td>${user.username}</td>
@@ -48,12 +44,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     <td><button class="btn btn-outline-success" onclick="changeertekmodal(String(${user.id}))">Módosítás</button></td>
                     <td><button class="btn btn-outline-danger" onclick="torlesertekmodal(String(${user.id}))">Törlés</button></td>`
             document.getElementById('adatok').appendChild(trow)
-            console.log(userek)
+            console.log(users)
         });
     }).catch(err => console.log(err));
 })
 async function torlesertekmodal(id) {
-    if (localStorage.getItem('username') != userek[id-1]["Felhasználónév"]) {
+    if (localStorage.getItem('username') != users[id]["Felhasználónév"]) {
         const myModal = new bootstrap.Modal(document.getElementById('sureModal'))
         document.getElementById('modositas2').outerHTML = `<button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="modositas2" onclick="torlesertek(${id})">Törlés</button>` 
         myModal.show()
@@ -85,26 +81,26 @@ async function torlesertek(id) {
 }
 async function changeertekmodal(id) {
     const myModal = new bootstrap.Modal(document.getElementById('modifyModal'))
-    if (localStorage.getItem('username') != userek[id-1]["Felhasználónév"]) {
+    if (localStorage.getItem('username') != users[id]["Felhasználónév"]) {
         document.getElementById('modalcim').innerHTML = id+" ID-jű felhasználó módosítása"
-        document.getElementById('felhasznalonev').value = userek[id-1]["Felhasználónév"]
-        document.getElementById('keresztnev').value = userek[id-1]["Keresztnév"]
-        document.getElementById('vezeteknev').value = userek[id-1]["Vezetéknév"]
-        document.getElementById('email').value = userek[id-1]["Email"]
-        document.getElementById('rang').value = userek[id-1]["Rang"]
-        document.getElementById('disabled').value = userek[id-1]["Disabled"]
+        document.getElementById('felhasznalonev').value = users[id]["Felhasználónév"]
+        document.getElementById('keresztnev').value = users[id]["Keresztnév"]
+        document.getElementById('vezeteknev').value = users[id]["Vezetéknév"]
+        document.getElementById('email').value = users[id]["Email"]
+        document.getElementById('rang').value = users[id]["Rang"]
+        document.getElementById('disabled').value = users[id]["Disabled"]
         document.getElementById('modositas').outerHTML = `<button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="modositas" onclick="ertekmodositas(${id})">Módosítás</button>`
         myModal.show()
     } else {
         document.getElementById('modalcim').innerHTML = id+" ID-jű felhasználó módosítása"
-        document.getElementById('felhasznalonev').value = userek[id-1]["Felhasználónév"]
-        document.getElementById('keresztnev').value = userek[id-1]["Keresztnév"]
+        document.getElementById('felhasznalonev').value = users[id]["Felhasználónév"]
+        document.getElementById('keresztnev').value = users[id]["Keresztnév"]
         document.getElementById('felhasznalonev').disabled = true
-        document.getElementById('vezeteknev').value = userek[id-1]["Vezetéknév"]
-        document.getElementById('email').value = userek[id-1]["Email"]
-        document.getElementById('rang').value = userek[id-1]["Rang"]
+        document.getElementById('vezeteknev').value = users[id]["Vezetéknév"]
+        document.getElementById('email').value = users[id]["Email"]
+        document.getElementById('rang').value = users[id]["Rang"]
         document.getElementById('rang').disabled = true
-        document.getElementById('disabled').value = userek[id-1]["Disabled"]
+        document.getElementById('disabled').value = users[id]["Disabled"]
         document.getElementById('disabled').disabled = true
         document.getElementById('modositas').outerHTML = `<button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="modositas" onclick="ertekmodositas(${id})">Módosítás</button>`
         myModal.show()

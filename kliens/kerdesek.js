@@ -1,4 +1,4 @@
-let kerdesek = []
+let questions = {}
 document.addEventListener('DOMContentLoaded', function() {
     const token = localStorage.getItem('token');
     const roleid = localStorage.getItem('roleid');
@@ -39,15 +39,12 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (kerdes.temakor_id == 5) {
                 temakorneve = "Grid"
             }
-            let aktualis = {
+            questions[kerdes.sorszam] = {"Témakör": temakorneve,
                 "ID": kerdes.id,
-                "Témakör": temakorneve,
-                "Sorszám": kerdes.sorszam,
                 "Cím": kerdes.cim,
                 "Leírás": kerdes.leiras,
-                "Elvárás": kerdes.elvaras
-            }
-            kerdesek.push(aktualis)
+                "Elvárás": kerdes.elvaras}
+
             const trow = document.createElement('tr')
             trow.innerHTML = `<td>${kerdes.id}</td>
                     <td>${temakorneve}</td>
@@ -55,10 +52,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${kerdes.cim}</td>
                     <td>${kerdes.leiras}</td>
                     <td>${kerdes.elvaras}</td>
-                    <td><button class="btn btn-outline-success" onclick="changeertekmodal(String(${kerdes.id}))">Módosítás</button></td>
-                    <td><button class="btn btn-outline-danger" onclick="torlesertekmodal(String(${kerdes.id}))">Törlés</button></td>`
+                    <td><button class="btn btn-outline-success" onclick="changeertekmodal(String(${kerdes.sorszam}))">Módosítás</button></td>
+                    <td><button class="btn btn-outline-danger" onclick="torlesertekmodal(String(${kerdes.sorszam}))">Törlés</button></td>`
             document.getElementById('adatok').appendChild(trow)
         });
+        console.log(questions)
     }).catch(err => console.log(err));
 })
 
@@ -92,12 +90,12 @@ async function torlesertek(id) {
 
 async function changeertekmodal(id) {
     const myModal = new bootstrap.Modal(document.getElementById('modifyModal'))
-    document.getElementById('modalcim').innerHTML = id+" ID-jű feladat módosítása"
-    document.getElementById('temakorneve').value = kerdesek[id-1]["Témakör"]
-    document.getElementById('sorszam').value = String(kerdesek[id-1]["Sorszám"])
-    document.getElementById('kerdescime').value = kerdesek[id-1]["Cím"]
-    document.getElementById('kerdesleirasa').value = kerdesek[id-1]["Leírás"]
-    document.getElementById('kerdeselvarasai').value = kerdesek[id-1]["Elvárás"]
+    document.getElementById('modalcim').innerHTML = id+" sorszámú feladat módosítása"
+    document.getElementById('temakorneve').value = questions[id]["Témakör"]
+    document.getElementById('sorszam').value = String(id)
+    document.getElementById('kerdescime').value = questions[id]["Cím"]
+    document.getElementById('kerdesleirasa').value = questions[id]["Leírás"]
+    document.getElementById('kerdeselvarasai').value = questions[id]["Elvárás"]
     document.getElementById('modositas').outerHTML = `<button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="modositas" onclick="ertekmodositas(${id})">Módosítás</button>`
     myModal.show()
     
