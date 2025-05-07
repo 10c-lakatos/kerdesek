@@ -23,13 +23,16 @@
               <li class="nav-item" id="users-btn-div">
                 <a href="./users.html" class="nav-link active">Felhasználók menedzselése</a>
               </li>
-              <li class="nav-item" id="logout-btn-div">
-                <button id="logout-btn" class="btn btn-outline-danger">Kijelentkezés</button>
-              </li>
-              <li class="nav-item mx-2" id="login-btn-div">
-                <a id="login-btn" class="btn btn-outline-primary" href="./bejelentkezes/login.html">Bejelentkezés</a>
-              </li>
             </ul>
+            <div class="nav-item ms-md-auto" id="logout-btn-div">
+              <button id="logout-btn" class="btn btn-outline-danger">
+                Kijelentkezés
+              </button>
+            </div>
+            <div class="nav-item ms-md-auto" id="login-btn-div">
+                <a id="login-btn" class="btn btn-outline-primary" href="./bejelentkezes/login.html">Bejelentkezés</a>
+            </div>
+          </div>
           </div>
         </div>
       </nav>
@@ -90,7 +93,10 @@
               </div>
               <div class="mb-3">
                 <label for="disabled" class="col-form-label">Korlátozott (0/1):</label>
-                <input type="text" class="form-control" id="disabled">
+                <select class="form-select" id="disabled">
+                  <option selected value="0">Nem</option>
+                  <option value="1">Igen</option>
+                </select>
               </div>
             </form>
           </div>
