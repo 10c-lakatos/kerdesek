@@ -26,77 +26,86 @@ function addElvaras() {
 
 
 
-document.getElementById('submit').addEventListener('click', async function() {
-  const token = localStorage.getItem('token');
-  if (!token) {
-      Swal.fire({title: "", text: 'Először kérlek jelentkezz be ehhez a művelethez!', icon: "error"});
-      return;
-  }
+document.getElementById('submit').addEventListener('click', async function () {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        Swal.fire({ title: "", text: 'Először kérlek jelentkezz be ehhez a művelethez!', icon: "error" });
+        return;
+    }
 
-  const felcim = document.getElementById('feladat-cime').value.trim();
-  const temakornev = String(document.getElementById('temakor-valasztas').value);
-  const felsorszam = Number(document.getElementById('feladat-sorszama').value);
-  const felleiras = document.getElementById('feladat-leirasa').value.trim();
-  const elvarasokinput = document.querySelectorAll('#elvarasok-container input');
+    const felcim = document.getElementById('feladat-cime').value.trim();
+    const temakornev = String(document.getElementById('temakor-valasztas').value);
+    const felsorszam = Number(document.getElementById('feladat-sorszama').value);
+    const felleiras = document.getElementById('feladat-leirasa').value.trim();
+    const elvarasokinput = document.querySelectorAll('#elvarasok-container input');
 
-  if (!felcim || !felleiras || !felsorszam) {
-      Swal.fire({title: "", text: 'Minden mezőt ki kell tölteni!', icon: "error"});
-      return;
-  }
+    if (!felcim || !felleiras || !felsorszam) {
+        Swal.fire({ title: "", text: 'Minden mezőt ki kell tölteni!', icon: "error" });
+        return;
+    }
 
-  const elvarasok = Array.from(elvarasokinput).map(input => input.value.trim()).filter(Boolean);
-  if (elvarasok.length === 0) {
-      Swal.fire({title: "", text: 'Legalább egy elvárást adj meg!', icon: "error"});
-      return;
-  }
+    const elvarasok = Array.from(elvarasokinput).map(input => input.value.trim()).filter(Boolean);
+    if (elvarasok.length === 0) {
+        Swal.fire({ title: "", text: 'Legalább egy elvárást adj meg!', icon: "error" });
+        return;
+    }
 
-  // 1. Lekérdezzük a meglévő kérdéseket
-  const kerdesResponse = await fetch('http://localhost:3000/api/kerdeseklista');
-  const kerdesek = await kerdesResponse.json();
+    const kerdesResponse = await fetch('http://localhost:3000/api/kerdeseklista');
+    const kerdesek = await kerdesResponse.json();
+    let containsquestions = true;
+    try {
+        if (kerdesek.error == "Nincsenek a kérdésekről adatok!") {
+            Swal.fire({ title: "", text: 'Nincsenek a kérdésekről adatok, nem tudsz hozzáadni!', icon: "error" });
+            containsquestions = false;
+        }
+        if (kerdesek.error == "Szerverhiba történt, próbáld újra később!") {
+            Swal.fire({ title: "", text: 'Szerverhiba történt, próbáld újra később!', icon: "error" });
+        }
+    } catch (err) {
+        console.log(err)
+    }
+    if (containsquestions) {
+        const modositando = kerdesek
+            .filter(k => k.sorszam >= felsorszam)
+            .sort((a, b) => b.sorszam - a.sorszam);
+        console.log(modositando)
+        for (const kerdes of modositando) {
+            await fetch('http://localhost:3000/api/modositas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    id: kerdes.id,
+                    temakornev: temakornev,
+                    felsorszam: kerdes.sorszam + 1,
+                    felcim: kerdes.cim,
+                    felleiras: kerdes.leiras,
+                    felelvaras: kerdes.elvaras
+                })
+            });
+        }
+    }
+    const response = await fetch('http://localhost:3000/api/feladat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            temakornev,
+            felsorszam,
+            felcim,
+            felleiras,
+            elvarasok: elvarasok.join('; ')
+        })
+    });
 
-  // 2. Megkeressük azokat, amelyek >= a megadott sorszámnál
-  const modositando = kerdesek
-      .filter(k => k.sorszam >= felsorszam)
-      .sort((a, b) => b.sorszam - a.sorszam); // csökkenő sorrend
-  console.log(modositando)
-  for (const kerdes of modositando) {
-      await fetch('http://localhost:3000/api/modositas', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-              id: kerdes.id,
-              temakornev: temakornev, // ez akár kerdes.temakor_id-ból is jöhetne
-              felsorszam: kerdes.sorszam + 1,
-              felcim: kerdes.cim,
-              felleiras: kerdes.leiras,
-              felelvaras: kerdes.elvaras
-          })
-      });
-  }
-
-  // 3. Új kérdés beszúrása
-  const response = await fetch('http://localhost:3000/api/feladat', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-          temakornev,
-          felsorszam,
-          felcim,
-          felleiras,
-          elvarasok: elvarasok.join('; ')
-      })
-  });
-
-  const responseData = await response.json();
-  if (response.ok) {
-      Swal.fire({title: "", text: responseData.message, icon: "success"}).then(() => location.reload());
-  } else {
-      Swal.fire({title: "", text: responseData.error, icon: "error"});
-  }
+    const responseData = await response.json();
+    if (response.ok) {
+        Swal.fire({ title: "", text: responseData.message, icon: "success" }).then(() => location.reload());
+    } else {
+        Swal.fire({ title: "", text: responseData.error, icon: "error" });
+    }
 });

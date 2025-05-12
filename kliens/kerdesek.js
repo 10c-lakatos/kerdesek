@@ -17,11 +17,11 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(a => a.json())
     .then(data => {
       try {
-        if (data.err == "Nincsenek a kérdésekről adatok!") {
+        if (data.error == "Nincsenek a kérdésekről adatok!") {
           Swal.fire({ title: "", text: 'Nincsenek a kérdésekről adatok!', icon: "error" });
           return;
         }
-        if (data.err == "Szerverhiba történt, próbáld újra később!") {
+        if (data.error == "Szerverhiba történt, próbáld újra később!") {
           Swal.fire({ title: "", text: 'Szerverhiba történt, próbáld újra később!', icon: "error" });
         }
       } catch (err) {

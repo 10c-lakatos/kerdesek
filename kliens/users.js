@@ -17,11 +17,11 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(a => a.json())
     .then(data => {
       try {
-        if (data.err == "Nincsenek a kérdésekről adatok!") {
+        if (data.error == "Nincsenek a kérdésekről adatok!") {
           Swal.fire({ title: "", text: 'Nincsenek a kérdésekről adatok!', icon: "error" });
           return;
         }
-        if (data.err == "Szerverhiba történt, próbáld újra később!") {
+        if (data.error == "Szerverhiba történt, próbáld újra később!") {
           Swal.fire({ title: "", text: 'Szerverhiba történt, próbáld újra később!', icon: "error" });
         }
       } catch (err) {
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
           "Rang": user.role,
           "Disabled": user.disabled
         }
-        if (user.username != localStorage.getItem('username')) {
+        //if (user.username != localStorage.getItem('username')) {
           const trow = document.createElement('tr')
           trow.innerHTML = `<td>${user.id}</td>
                     <td>${user.username}</td>
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <td><button class="btn btn-outline-success" onclick="changeertekmodal(String(${user.id}))">Módosítás</button></td>
                     <td><button class="btn btn-outline-danger" onclick="torlesertekmodal(String(${user.id}))">Törlés</button></td>`
           document.getElementById('adatok').appendChild(trow)
-        }
+        //}
       });
     }).catch(err => console.log(err));
 })

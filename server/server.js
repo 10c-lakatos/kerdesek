@@ -203,11 +203,11 @@ app.post('/login', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
     if (!rows) {res.status(500).json({ error: 'Adatbázis hiba' }); return;};
-    if (rows.length === 0) return res.status(400).json({ error: 'Hibás felhasználónév' });
+    if (rows.length === 0) return res.status(400).json({ error: 'Hibás felhasználónév!' });
 
     const user = rows[0];
     const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).json({ error: 'Hibás jelszó' });
+    if (!match) return res.status(400).json({ error: 'Hibás jelszó!' });
     const token = jwt.sign({ id: user.id, username: user.username }, 'ed2d60efa09b793925b26bb76c1624cdb1cbfaca7cb47d98851a6f52130e6d342a3182798b23b90065abe7a8364b944e2b03e29bb48c41a1ac05c68fd9807c2e', {
       expiresIn: '1h',
     });
