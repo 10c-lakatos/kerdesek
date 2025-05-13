@@ -25,6 +25,9 @@
             <li class="nav-item" id="users-btn-div">
               <a href="./users.html" class="nav-link">Felhasználók menedzselése</a>
             </li>
+            <li class="nav-item" id="own-btn-div">
+              <a class="nav-link" href="./profile.html">Saját profil szerkesztése</a>
+            </li>
           </ul>
           <div class="nav-item ms-md-auto" id="logout-btn-div">
             <button id="logout-btn" class="btn btn-outline-danger">
@@ -70,6 +73,7 @@
       if (!token) {
         document.getElementById('logout-btn-div').style.display = 'none';
         document.getElementById('login-btn-div').style.display = 'block';
+        document.getElementById('own-btn-div').style.display = 'none';
       } else {
         document.getElementById('logout-btn-div').style.display = 'block';
         document.getElementById('login-btn-div').style.display = 'none';

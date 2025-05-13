@@ -117,6 +117,21 @@ app.post('/api/userchange', authenticateToken, async (req, res) => {
     console.log(err)
   }
 })
+app.post('/api/ownprofilechange', authenticateToken, async (req, res) => {
+  try {
+    const {username, first_name, last_name, email} = req.body;
+    if (!username || !first_name || !last_name || !email) {
+      return res.status(400).json({ error: 'Minden mezőt ki kell tölteni!' });
+    }
+    await db.query(
+      'UPDATE users SET username = ?, first_name = ?, last_name = ?, email = ? WHERE id = ?;',
+      [username, first_name, last_name, email]
+    )
+    res.json({ message: 'Sikeresen módosítva!' })
+  } catch (err) {
+    console.log(err)
+  }
+})
 
 app.post('/api/torles', authenticateToken, async (req, res) => {
   try {
@@ -195,6 +210,39 @@ app.post('/register', async (req, res) => {
       res.status(500).json({ error: 'Hiba a regisztrációnál!' });
     }
     console.log(err)
+  }
+});
+
+app.post('/pwdchange', async (req, res) => {
+  const {username, oldpassword, newpassword} = req.body;
+  try {
+    const [rows] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+    if (!rows) {res.status(500).json({ error: 'Adatbázis hiba' }); return;};
+    if (rows.length === 0) return res.status(400).json({ error: 'Hibás felhasználónév!' });
+    const user = rows[0];
+    const match = await bcrypt.compare(oldpassword, user.password);
+    if (match) {
+      const hashednewpassword = bcrypt.hash(newpassword, 10);
+      const [searchingRows] = await db.query(
+        'SELECT id FROM users WHERE username = ?',
+        [username]
+      );
+      if (searchingRows.length === 0) {
+        return res.status(400).json({ error: "Nem létezik ilyen id-jú felhasználó" });
+      }
+      const id = searchingRows[0].id;
+      await db.query(
+        'UPDATE users SET password = ? WHERE id = ?;',
+        [hashednewpassword, id]
+      )
+      res.status(201).json({ message: 'Sikeres jelszómódosítás!' })
+    } else {
+      res.status(400).json({ error: 'Hibás régi jelszó!' });
+      return;
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(400).json({error: "Jelszómódosítási hiba"})
   }
 });
 

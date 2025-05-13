@@ -1,3 +1,6 @@
+let highestSorszam = 1;
+
+
 function addElvaras() {
     const container = document.getElementById('elvarasok-container');
 
@@ -24,6 +27,30 @@ function addElvaras() {
     container.appendChild(inputgroup);
 }
 
+document.addEventListener('DOMContentLoaded', async function () {
+    const kerdesResponse = await fetch('http://localhost:3000/api/kerdeseklista');
+    const kerdesek = await kerdesResponse.json();
+    let containsquestions = true;
+    try {
+        if (kerdesek.error == "Nincsenek a kérdésekről adatok!") {
+            Swal.fire({ title: "", text: 'Nincsenek a kérdésekről adatok, nem tudsz hozzáadni!', icon: "error" });
+            containsquestions = false;
+        }
+        if (kerdesek.error == "Szerverhiba történt, próbáld újra később!") {
+            Swal.fire({ title: "", text: 'Szerverhiba történt, próbáld újra később!', icon: "error" });
+        }
+    } catch (err) {
+        console.log(err)
+    }
+    if (containsquestions) {
+        const modositando = kerdesek
+            .sort((a, b) => b.sorszam - a.sorszam);
+            document.getElementById('feladat-sorszama').value = modositando[0].sorszam+1
+            highestSorszam = Number(modositando[0].sorszam+1)
+    } else {
+        document.getElementById('feladat-sorszama').value = 1;
+    }
+})
 
 
 document.getElementById('submit').addEventListener('click', async function () {
@@ -43,7 +70,10 @@ document.getElementById('submit').addEventListener('click', async function () {
         Swal.fire({ title: "", text: 'Minden mezőt ki kell tölteni!', icon: "error" });
         return;
     }
-
+    if (felsorszam > highestSorszam) {
+        Swal.fire({ title: "", text: 'Túl magas sorszámot adtál meg!', icon: "error" });
+        return;
+    }
     const elvarasok = Array.from(elvarasokinput).map(input => input.value.trim()).filter(Boolean);
     if (elvarasok.length === 0) {
         Swal.fire({ title: "", text: 'Legalább egy elvárást adj meg!', icon: "error" });
